@@ -1,10 +1,17 @@
 {
   "name": "react-ar-markers",
-  "version": "1.0.0",
+  "version": "1.0.0-beta",
   "description": "",
-  "main": "index.js",
+  "main": "dist/react-ar-markers.js",
+  "module": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "npm-run-all build:clean build:es6 build:es5",
+    "build:clean": "rimraf dist lib",
+    "build:es6": "tsc",
+    "build:es5": "webpack --config ./build/webpack.config.js --env.prod",
+    "lint": "tslint --project tsconfig.json",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "webpack-dev-server --config ./build/webpack.config.js --env.dev"
   },
   "repository": {
     "type": "git",
@@ -18,5 +25,25 @@
   "bugs": {
     "url": "https://github.com/paztis/react-ar-markers/issues"
   },
-  "homepage": "https://github.com/paztis/react-ar-markers#readme"
+  "homepage": "https://github.com/paztis/react-ar-markers#readme",
+  "dependencies": {},
+  "peerDependencies": {
+    "react": "^15.0.0 || ^16.0.0",
+    "react-dom": "^15.0.0 || ^16.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^15.6.1",
+    "@types/react-dom": "^15.5.6",
+    "npm-run-all": "^4.1.2",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.2",
+    "rimraf": "^2.6.2",
+    "ts-loader": "^3.1.1",
+    "tslint": "^5.8.0",
+    "tslint-config-airbnb": "^5.4.2",
+    "tslint-loader": "^3.5.3",
+    "typescript": "^2.6.1",
+    "webpack": "^3.8.1",
+    "webpack-dev-server": "^2.9.4"
+  }
 }
