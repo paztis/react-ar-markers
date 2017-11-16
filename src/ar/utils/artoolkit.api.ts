@@ -1,7 +1,11 @@
-// Type definitions for Javascript ARToolKit v5.x 
-// Project: https://github.com/artoolkit/jsartoolkit5
-// Definitions by: Hakan Dilek <https://github.com/hakandilek>
-// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped  
+import 'script-loader!jsartoolkit/build/artoolkit.min';
+
+import {
+    Object3D,
+    Scene,
+    Camera,
+    WebGLRenderer
+} from 'three';
 
 export declare class artoolkit {
     public static readonly UNKNOWN_MARKER: number;
@@ -19,6 +23,17 @@ export interface AEEvent {
     name: string;
     target: any;
     data: any;
+}
+
+export interface ARScene {
+    scene: Scene;
+    videoScene: Scene;
+    camera: Camera;
+    videoCamera: Camera;
+    arController: ARController;
+    video: any;
+    process(): void;
+    renderOn(renderer: WebGLRenderer): void;
 }
 
 export interface ARController {
@@ -64,9 +79,38 @@ export interface ARController {
     */
     setPatternDetectionMode(mode: number): void;
 
+    // Methods Augmented in artoolkit-three
+    loadLocalMarker(stringData: string): string;
+    createThreeScene(video?: HTMLImageElement | HTMLVideoElement): ARScene;
+    createThreeMarker(markerUID: string, markerWidth: number): Object3D;
+    createThreeMultiMarker(markerUID: string): Object3D;
+    createThreeBarcodeMarker(markerUID: string, markerWidth: number): Object3D;
+    setupThree(): void;
 }
 
-//export declare interface ARControllerStatic{}
+// export declare var ARController: {
+//     prototype: ARController;
+//     new(): ARController;
+//     getUserMediaARController(configuration: UserMediaARConfiguration): HTMLVideoElement;
+// };
+export interface ARControllerClass {
+    prototype: ARController;
+    new(): ARController;
+    getUserMediaARController(configuration: UserMediaARConfiguration): HTMLVideoElement;
+};
+
+export interface UserMediaARConfiguration {
+    onSuccess?(controller: ARController, cameraParam: ARCameraParam): void;
+    onError?(error: any): void;
+
+    cameraParam: string | Uint8Array;
+    maxARVideoSize?: number;
+
+    width?: number | { min: number, ideal: number, max: number };
+    height?: number | { min: number, ideal: number, max: number };
+
+    facingMode?: string | { exact: string };
+}
 
 export declare class ARCameraParam {
     onload(): void;

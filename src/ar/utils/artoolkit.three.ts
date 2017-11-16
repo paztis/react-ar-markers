@@ -1,10 +1,18 @@
-import 'script-loader!jsartoolkit/build/artoolkit.min';
-import {AEEvent, ARController as ARControllerOriginal, ARCameraParam, artoolkit} from './artoolkit.api.d';
+import {
+    AEEvent,
+    ARScene,
+    ARController,
+    ARControllerClass,
+    ARCameraParam,
+    UserMediaARConfiguration,
+    artoolkit
+} from './artoolkit.api';
 import {
     Texture,
     LinearFilter,
     Object3D,
     Mesh,
+    Material,
     PlaneBufferGeometry,
     MeshBasicMaterial,
     DoubleSide,
@@ -15,30 +23,17 @@ import {
     WebGLRenderer
 } from 'three';
 
+// ---------------
 // Interfaces
+// ---------------
 export interface ARConfiguration {
-    onSuccess(scene: ARScene, controller: ARController, cameraParam: ARCameraParam): void;
-    [others: string]: any;
-}
+    cameraParam: string | Uint8Array;
+    maxARVideoSize?: number;
 
-export interface ARScene {
-    scene: Scene;
-    videoScene: Scene;
-    camera: Camera;
-    videoCamera: Camera;
-    arController: ARController;
-    video: any;
-    process(): void;
-    renderOn(renderer: WebGLRenderer): void;
-}
+    width?: number | { min: number, ideal: number, max: number };
+    height?: number | { min: number, ideal: number, max: number };
 
-export interface ARController extends ARControllerOriginal {
-    loadLocalMarker(stringData: string): string;
-    createThreeScene(video?: HTMLImageElement | HTMLVideoElement): ARScene;
-    createThreeMarker(markerUID: string, markerWidth: number): Object3D;
-    createThreeMultiMarker(markerUID: string): Object3D;
-    createThreeBarcodeMarker(markerUID: string, markerWidth: number): Object3D;
-    setupThree(): void;
+    facingMode?: string | { exact: string };
 }
 
 declare var FS: {
@@ -49,27 +44,7 @@ declare var Module: {
     _addMarker(id: string, filename: string): string;
 };
 
-declare var ARController: {
-    prototype: ARController;
-    new(): ARController;
-    getUserMediaThreeScene(configuration: ARConfiguration): HTMLVideoElement;
-};
-
-// utils
-function writeStringToFS(target: string, string: string) {
-    const byteArray = new Uint8Array(string.length);
-    for (let i = 0; i < byteArray.length; i++) {
-        byteArray[i] = string.charCodeAt(i) & 0xff;
-    }
-    writeByteArrayToFS(target, byteArray);
-}
-
-function writeByteArrayToFS(target: string, byteArray: Uint8Array) {
-    FS.writeFile(target, byteArray, { encoding: 'binary' });
-    // console.log('FS written', target);
-
-    byteArray;
-}
+const ARControllerThree:ARControllerClass = (window as any).ARController;
 
 
 /**
@@ -105,22 +80,33 @@ function writeByteArrayToFS(target: string, byteArray: Uint8Array) {
     @param {function} onSuccess - Called on successful initialization with an ThreeARScene object.
     @param {function} onError - Called if the initialization fails with the error encountered.
 */
-export const getUserMediaThreeScene = (configuration: ARConfiguration): HTMLVideoElement => {
-    var onSuccess = configuration.onSuccess;
-    const obj:any = {
-        ...configuration,
-        onSuccess: function (arController: ARController, arCameraParam: ARCameraParam) {
-            var scenes = arController.createThreeScene();
-            onSuccess(scenes, arController, arCameraParam);
-        }
-    };
+export const initUserMediaThreeScene = (configuration: ARConfiguration): Promise<{
+    arScene: ARScene,
+    arController: ARController,
+    arCameraParam: ARCameraParam
+}> => {
+    return new Promise((resolve, reject) => {
+        const userMediaARConfiguration: UserMediaARConfiguration = {
+            ...configuration,
 
-    var video:HTMLVideoElement = this.getUserMediaARController(obj);
-    return video;
+            onSuccess: (arController: ARController, arCameraParam: ARCameraParam) => {
+                var arScene: ARScene = arController.createThreeScene();
+                resolve({ arScene, arController, arCameraParam });
+            },
+            onError: (error: any) => {
+                reject(error);
+            }
+        };
+
+        ARControllerThree.getUserMediaARController(userMediaARConfiguration);
+    });
 };
 
+// ----------------------
+// ARController extension
+// ----------------------
 let marker_count = 0;
-ARController.prototype.loadLocalMarker = function (stringData: string): string {
+ARControllerThree.prototype.loadLocalMarker = function (stringData: string): string {
     const filename = '/custom_marker_' + marker_count++;
     writeStringToFS(filename, stringData);
 
@@ -156,7 +142,7 @@ ARController.prototype.loadLocalMarker = function (stringData: string): string {
 
     @param video Video image to use as scene background. Defaults to this.image
 */
-ARController.prototype.createThreeScene = function (video: HTMLImageElement | HTMLVideoElement): ARScene {
+ARControllerThree.prototype.createThreeScene = function (video: HTMLImageElement | HTMLVideoElement): ARScene {
     video = video || this.image;
 
     this.setupThree();
@@ -174,8 +160,8 @@ ARController.prototype.createThreeScene = function (video: HTMLImageElement | HT
     );
 
     // The video plane shouldn't care about the z-buffer.
-    (plane.material as any).depthTest = false;
-    (plane.material as any).depthWrite = false;
+    (plane.material as Material).depthTest = false;
+    (plane.material as Material).depthWrite = false;
 
     // Create a camera and a scene for the video plane and
     // add the camera and the video plane to the scene.
@@ -256,7 +242,7 @@ ARController.prototype.createThreeScene = function (video: HTMLImageElement | HT
     @param {number} markerWidth The width of the marker, defaults to 1.
     @return {THREE.Object3D} Three.Object3D that tracks the given marker.
 */
-ARController.prototype.createThreeMarker = function (markerUID: string, markerWidth: number): Object3D {
+ARControllerThree.prototype.createThreeMarker = function (markerUID: string, markerWidth: number): Object3D {
     this.setupThree();
     var obj = new Object3D();
     (obj as any).markerTracker = this.trackPatternMarkerId(markerUID, markerWidth);
@@ -280,7 +266,7 @@ ARController.prototype.createThreeMarker = function (markerUID: string, markerWi
     @param {number} markerUID The UID of the marker to track.
     @return {THREE.Object3D} Three.Object3D that tracks the given marker.
 */
-ARController.prototype.createThreeMultiMarker = function (markerUID: string): Object3D {
+ARControllerThree.prototype.createThreeMultiMarker = function (markerUID: string): Object3D {
     this.setupThree();
     var obj = new Object3D();
     obj.matrixAutoUpdate = false;
@@ -305,7 +291,7 @@ ARController.prototype.createThreeMultiMarker = function (markerUID: string): Ob
     @param {number} markerWidth The width of the marker, defaults to 1.
     @return {THREE.Object3D} Three.Object3D that tracks the given marker.
 */
-ARController.prototype.createThreeBarcodeMarker = function (markerUID: string, markerWidth: number): Object3D {
+ARControllerThree.prototype.createThreeBarcodeMarker = function (markerUID: string, markerWidth: number): Object3D {
     this.setupThree();
     var obj = new Object3D();
     (obj as any).markerTracker = this.trackBarcodeMarkerId(markerUID, markerWidth);
@@ -314,7 +300,7 @@ ARController.prototype.createThreeBarcodeMarker = function (markerUID: string, m
     return obj;
 };
 
-ARController.prototype.setupThree = function () {
+ARControllerThree.prototype.setupThree = function () {
     if (this.THREE_JS_ENABLED) {
         return;
     }
@@ -380,3 +366,23 @@ ARController.prototype.setupThree = function () {
     */
     this.threeMultiMarkers = {};
 };
+
+// ---------------
+// Utils
+// ---------------
+function writeStringToFS(target: string, string: string) {
+    const byteArray = new Uint8Array(string.length);
+    for (let i = 0; i < byteArray.length; i++) {
+        byteArray[i] = string.charCodeAt(i) & 0xff;
+    }
+    writeByteArrayToFS(target, byteArray);
+}
+
+function writeByteArrayToFS(target: string, byteArray: Uint8Array) {
+    FS.writeFile(target, byteArray, { encoding: 'binary' });
+    // console.log('FS written', target);
+
+    byteArray;
+}
+
+export default ARControllerThree;
