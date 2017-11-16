@@ -17,6 +17,14 @@ module.exports = ({ dev }) => {
         options: {
             configFile: BUILD_TSCONFIG
         }
+    },
+    // Binary loader for data
+    {
+        test: /\.dat$/,
+        loaders: [
+            'binary-loader',
+        ],
+        exclude: /node_modules/
     }];
     if (dev) {
         RULES.push({
@@ -53,6 +61,6 @@ module.exports = ({ dev }) => {
             publicPath: '/demo/',
             compress: true,
             port: 9000
-          }
+        }
     };
 }
