@@ -1,4 +1,6 @@
-import 'script-loader!jsartoolkit/build/artoolkit.min';
+// import 'script-loader!jsartoolkit/build/artoolkit.min';
+import 'script-loader!jsartoolkit/build/artoolkit.debug';
+import 'jsartoolkit/js/artoolkit.api';
 
 import {
     Object3D,
@@ -7,17 +9,30 @@ import {
     WebGLRenderer
 } from 'three';
 
-export declare class artoolkit {
-    public static readonly UNKNOWN_MARKER: number;
-    public static readonly PATTERN_MARKER: number;
-    public static readonly BARCODE_MARKER: number;
+// export declare class artoolkit {
+//     public static readonly UNKNOWN_MARKER: number;
+//     public static readonly PATTERN_MARKER: number;
+//     public static readonly BARCODE_MARKER: number;
 
-    public static readonly AR_TEMPLATE_MATCHING_COLOR: number;
-    public static readonly AR_TEMPLATE_MATCHING_MONO: number;
-    public static readonly AR_MATRIX_CODE_DETECTION: number;
-    public static readonly AR_TEMPLATE_MATCHING_COLOR_AND_MATRIX: number;
-    public static readonly AR_TEMPLATE_MATCHING_MONO_AND_MATRIX: number;
+//     public static readonly AR_TEMPLATE_MATCHING_COLOR: number;
+//     public static readonly AR_TEMPLATE_MATCHING_MONO: number;
+//     public static readonly AR_MATRIX_CODE_DETECTION: number;
+//     public static readonly AR_TEMPLATE_MATCHING_COLOR_AND_MATRIX: number;
+//     public static readonly AR_TEMPLATE_MATCHING_MONO_AND_MATRIX: number;
+// }
+export interface artoolkitClass {
+    UNKNOWN_MARKER: number;
+    PATTERN_MARKER: number;
+    BARCODE_MARKER: number;
+
+    AR_TEMPLATE_MATCHING_COLOR: number;
+    AR_TEMPLATE_MATCHING_MONO: number;
+    AR_MATRIX_CODE_DETECTION: number;
+    AR_TEMPLATE_MATCHING_COLOR_AND_MATRIX: number;
+    AR_TEMPLATE_MATCHING_MONO_AND_MATRIX: number;
 }
+const artoolkit:artoolkitClass = (window as any).artoolkit;
+export {artoolkit};
 
 export interface AEEvent {
     name: string;
@@ -42,6 +57,7 @@ export interface ARController {
     camera: ARCameraParam;
     videoHeight: number;
     videoWidth: number;
+    orientation: string;
 
     constructor(width: number, height: number, cameraData: string | ARCameraParam): void;
 
@@ -88,22 +104,21 @@ export interface ARController {
     setupThree(): void;
 }
 
-// export declare var ARController: {
-//     prototype: ARController;
-//     new(): ARController;
-//     getUserMediaARController(configuration: UserMediaARConfiguration): HTMLVideoElement;
-// };
 export interface ARControllerClass {
     prototype: ARController;
     new(): ARController;
     getUserMediaARController(configuration: UserMediaARConfiguration): HTMLVideoElement;
 };
 
+const ARControllerThree:ARControllerClass = (window as any).ARController;
+export {ARControllerThree};
+
+
 export interface UserMediaARConfiguration {
     onSuccess?(controller: ARController, cameraParam: ARCameraParam): void;
     onError?(error: any): void;
 
-    cameraParam: string | Uint8Array;
+    cameraParam: string;
     maxARVideoSize?: number;
 
     width?: number | { min: number, ideal: number, max: number };

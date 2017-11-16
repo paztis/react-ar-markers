@@ -1,6 +1,7 @@
 {
     "extends": "tslint-config-airbnb",
     "rules": {
-        "max-line-length": 0
+        "max-line-length": 0,
+        "ter-indent": [true, 4, {"SwitchCase": 1}]
     }
 }

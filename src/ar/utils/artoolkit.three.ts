@@ -3,6 +3,7 @@ import {
     ARScene,
     ARController,
     ARControllerClass,
+    ARControllerThree,
     ARCameraParam,
     UserMediaARConfiguration,
     artoolkit
@@ -27,7 +28,7 @@ import {
 // Interfaces
 // ---------------
 export interface ARConfiguration {
-    cameraParam: string | Uint8Array;
+    cameraParam: string;
     maxARVideoSize?: number;
 
     width?: number | { min: number, ideal: number, max: number };
@@ -36,15 +37,16 @@ export interface ARConfiguration {
     facingMode?: string | { exact: string };
 }
 
-declare var FS: {
+declare const FS: {
     writeFile(target: string, byteArray: Uint8Array, options: any): void;
 };
 
-declare var Module: {
+declare const Module: {
     _addMarker(id: string, filename: string): string;
 };
 
-const ARControllerThree:ARControllerClass = (window as any).ARController;
+// const ARControllerThree:ARControllerClass = (window as any).ARController;
+// const artoolkit:artoolkitClass = (window as any).artoolkit;
 
 
 /**
