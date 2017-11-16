@@ -1,9 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import ArMarker from '../src/index';
+import {AR, Map} from './index';
 
 
 ReactDOM.render(
-  <ArMarker />,
+  <div>
+    <AR />
+    <Map />
+  </div>,
   document.getElementById('root'),
 );
