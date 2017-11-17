@@ -12,6 +12,7 @@ export default class MapNav extends React.Component<MapNavProps, MapNavState> {
     this.state = {
       lat: 48.11734209,
       lng: -1.7075198,
+      matchingResults: [],
     };
     this.watchID = null;
   }
