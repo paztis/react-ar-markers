@@ -1,20 +1,5 @@
-import * as React from 'react';
+import MapNav from './components/MapNav/MapNav';
 
-export interface ArMarkerProps {
-}
-
-export interface ArMarkerState {
-}
-
-export default class ArMarker extends React.Component<ArMarkerProps, ArMarkerState> {
-    constructor(props: ArMarkerProps) {
-        super(props);
-        this.state = {};
-    }
-
-    render() {
-        return (
-            <div />
-        );
-    }
-}
+export default {
+  MapNav,
+};

@@ -27,6 +27,8 @@
   },
   "homepage": "https://github.com/paztis/react-ar-markers#readme",
   "dependencies": {
+    "geolib": "^2.0.24",
+    "google-map-react": "^0.25.0",
     "jsartoolkit": "^0.0.0",
     "three": "^0.88.0"
   },
