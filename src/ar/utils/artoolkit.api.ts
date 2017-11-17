@@ -1,6 +1,6 @@
-// import 'script-loader!jsartoolkit/build/artoolkit.min';
-import 'script-loader!jsartoolkit/build/artoolkit.debug';
-import 'jsartoolkit/js/artoolkit.api';
+// require('script-loader!jsartoolkit/build/artoolkit.min');
+require('script-loader!jsartoolkit/build/artoolkit.debug');
+require('jsartoolkit/js/artoolkit.api');
 
 import {
     Object3D,

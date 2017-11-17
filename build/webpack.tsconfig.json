@@ -6,7 +6,10 @@
         "target": "es5",
         "jsx": "react",
         "allowSyntheticDefaultImports": true,
-        "declaration": false
+        "declaration": false,
+        
+        "suppressExcessPropertyErrors": true,
+        "suppressImplicitAnyIndexErrors": true
     },
     "include": [
         "../src/**/*"
