@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function mapMarker({ title, classNames }) {
+export default function mapMarker({title, classNames}) {
   const style = {
     width: '30px',
     height: '30px',

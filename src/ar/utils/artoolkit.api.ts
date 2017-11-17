@@ -1,24 +1,54 @@
-// Type definitions for Javascript ARToolKit v5.x 
-// Project: https://github.com/artoolkit/jsartoolkit5
-// Definitions by: Hakan Dilek <https://github.com/hakandilek>
-// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped  
+// import 'script-loader!jsartoolkit/build/artoolkit.min';
+import 'script-loader!jsartoolkit/build/artoolkit.debug';
+import 'jsartoolkit/js/artoolkit.api';
 
-export declare class artoolkit {
-    public static readonly UNKNOWN_MARKER: number;
-    public static readonly PATTERN_MARKER: number;
-    public static readonly BARCODE_MARKER: number;
+import {
+    Object3D,
+    Scene,
+    Camera,
+    WebGLRenderer
+} from 'three';
 
-    public static readonly AR_TEMPLATE_MATCHING_COLOR: number;
-    public static readonly AR_TEMPLATE_MATCHING_MONO: number;
-    public static readonly AR_MATRIX_CODE_DETECTION: number;
-    public static readonly AR_TEMPLATE_MATCHING_COLOR_AND_MATRIX: number;
-    public static readonly AR_TEMPLATE_MATCHING_MONO_AND_MATRIX: number;
+// export declare class artoolkit {
+//     public static readonly UNKNOWN_MARKER: number;
+//     public static readonly PATTERN_MARKER: number;
+//     public static readonly BARCODE_MARKER: number;
+
+//     public static readonly AR_TEMPLATE_MATCHING_COLOR: number;
+//     public static readonly AR_TEMPLATE_MATCHING_MONO: number;
+//     public static readonly AR_MATRIX_CODE_DETECTION: number;
+//     public static readonly AR_TEMPLATE_MATCHING_COLOR_AND_MATRIX: number;
+//     public static readonly AR_TEMPLATE_MATCHING_MONO_AND_MATRIX: number;
+// }
+export interface artoolkitClass {
+    UNKNOWN_MARKER: number;
+    PATTERN_MARKER: number;
+    BARCODE_MARKER: number;
+
+    AR_TEMPLATE_MATCHING_COLOR: number;
+    AR_TEMPLATE_MATCHING_MONO: number;
+    AR_MATRIX_CODE_DETECTION: number;
+    AR_TEMPLATE_MATCHING_COLOR_AND_MATRIX: number;
+    AR_TEMPLATE_MATCHING_MONO_AND_MATRIX: number;
 }
+const artoolkit:artoolkitClass = (window as any).artoolkit;
+export {artoolkit};
 
 export interface AEEvent {
     name: string;
     target: any;
     data: any;
+}
+
+export interface ARScene {
+    scene: Scene;
+    videoScene: Scene;
+    camera: Camera;
+    videoCamera: Camera;
+    arController: ARController;
+    video: any;
+    process(): void;
+    renderOn(renderer: WebGLRenderer): void;
 }
 
 export interface ARController {
@@ -27,6 +57,7 @@ export interface ARController {
     camera: ARCameraParam;
     videoHeight: number;
     videoWidth: number;
+    orientation: string;
 
     constructor(width: number, height: number, cameraData: string | ARCameraParam): void;
 
@@ -64,9 +95,37 @@ export interface ARController {
     */
     setPatternDetectionMode(mode: number): void;
 
+    // Methods Augmented in artoolkit-three
+    loadLocalMarker(stringData: string): string;
+    createThreeScene(video?: HTMLImageElement | HTMLVideoElement): ARScene;
+    createThreeMarker(markerUID: string, markerWidth: number): Object3D;
+    createThreeMultiMarker(markerUID: string): Object3D;
+    createThreeBarcodeMarker(markerUID: string, markerWidth: number): Object3D;
+    setupThree(): void;
 }
 
-//export declare interface ARControllerStatic{}
+export interface ARControllerClass {
+    prototype: ARController;
+    new(): ARController;
+    getUserMediaARController(configuration: UserMediaARConfiguration): HTMLVideoElement;
+};
+
+const ARControllerThree:ARControllerClass = (window as any).ARController;
+export {ARControllerThree};
+
+
+export interface UserMediaARConfiguration {
+    onSuccess?(controller: ARController, cameraParam: ARCameraParam): void;
+    onError?(error: any): void;
+
+    cameraParam: string;
+    maxARVideoSize?: number;
+
+    width?: number | { min: number, ideal: number, max: number };
+    height?: number | { min: number, ideal: number, max: number };
+
+    facingMode?: string | { exact: string };
+}
 
 export declare class ARCameraParam {
     onload(): void;

@@ -100,3 +100,5 @@ export default class MapNav extends React.Component<MapNavProps, MapNavState> {
     return template;
   }
 }
+
+export { MapNav };

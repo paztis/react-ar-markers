@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { MapNavProps } from 'components/MapNav/MapNav.interfaces';
 import MapNav from './components/MapNav/MapNav';
+import {AR} from './index';
 
 const markers = [
   {
@@ -9,7 +10,7 @@ const markers = [
     lat: 48.10901111,
     lng: -1.6075148,
     data: {
-      title: '0',
+      title: 'toto',
     },
   },
   {
@@ -17,7 +18,7 @@ const markers = [
     lat: 48.13034209,
     lng: -1.7888197,
     data: {
-      title: '1',
+      title: 'tintin',
     },
   },
   {
@@ -25,7 +26,7 @@ const markers = [
     lat: 48.11934215,
     lng: -1.4555180,
     data: {
-      title: '2',
+      title: 'tata',
     },
   },
   {
@@ -33,7 +34,7 @@ const markers = [
     lat: 48.15555250,
     lng: -1.8105111,
     data: {
-      title: '3',
+      title: 'tutu',
     },
   },
   {
@@ -41,7 +42,7 @@ const markers = [
     lat: 48.118522399999996,
     lng: -1.652105,
     data: {
-      title: '4',
+      title: 'tete',
     },
   },
   {
@@ -49,7 +50,7 @@ const markers = [
     lat: 48.118522399999996,
     lng: -1.652105,
     data: {
-      title: '5',
+      title: 'titi',
     },
   },
 ];
@@ -63,8 +64,12 @@ function initMapNav() : MapNavProps {
   };
 }
 
+const fullScreenStyle: any = { position: 'absolute', top: 0, left: 0, bottom: 0, right: 0 };
 
 ReactDOM.render(
-  <MapNav { ...initMapNav() } />,
+  <div style={fullScreenStyle}>
+    <MapNav { ...initMapNav() } />
+    {/*<AR />*/}
+  </div>,
   document.getElementById('root'),
 );

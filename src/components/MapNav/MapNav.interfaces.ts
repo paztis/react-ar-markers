@@ -4,7 +4,7 @@ export interface MapNavProps {
   API_KEY: string;
   matchingZoneRadius: number; // meters
   markers: MapMarkerObj[];
-  handleResults(results : MapMarkerObj[]) : any[];
+  handleResults(results : MapMarkerObj[]) : any;
 
   isVisible?: boolean;
   language?: string;

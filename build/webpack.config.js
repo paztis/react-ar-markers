@@ -60,7 +60,10 @@ module.exports = ({ dev }) => {
             contentBase: ROOT,
             publicPath: '/demo/',
             compress: true,
-            port: 9000
+            port: 9000,
+            overlay: {
+                errors: true
+              }
         }
     };
 }
