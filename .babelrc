@@ -1,0 +1,18 @@
+{
+  "env": {
+    "es6": {
+      "presets": ["react"],
+      "plugins": [
+        "transform-decorators-legacy",
+        "transform-object-rest-spread"
+      ]
+    },
+    "es5": {
+      "presets": [["env", {"modules": false}], "react"],
+      "plugins": [
+        "transform-decorators-legacy",
+        "transform-object-rest-spread"
+      ]
+    }
+  }
+}

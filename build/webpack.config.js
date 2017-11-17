@@ -1,60 +1,96 @@
 const PATH = require('path');
+const WEBPACK = require('webpack');
 const PACKAGE = require('../package.json');
 
 const ROOT = PATH.resolve(__dirname, '..');
 const SRC = PATH.resolve(ROOT, 'src');
-const SRC_FILE = PATH.resolve(SRC, 'index.tsx');
-const DEMO_FILE = PATH.resolve(SRC, 'demo.tsx');
+const SRC_FILE = PATH.resolve(SRC, 'index.js');
+const DEMO_FILE = PATH.resolve(SRC, 'demo.js');
 const DIST = PATH.resolve(ROOT, 'dist');
 const BUILD = PATH.resolve(ROOT, 'build');
-const BUILD_TSCONFIG = PATH.resolve(BUILD, 'webpack.tsconfig.json');
 
-module.exports = ({ dev }) => {
-    const RULES = [{
-        test: /\.tsx?$/,
-        loader: 'ts-loader',
-        exclude: /node_modules/,
-        options: {
-            configFile: BUILD_TSCONFIG
-        }
-    },
-    // Binary loader for data
-    {
-        test: /\.dat$/,
-        loaders: [
-            'binary-loader',
-        ],
-        exclude: /node_modules/
-    }];
-    if (dev) {
-        RULES.push({
-            test: /\.ts$/,
-            enforce: 'pre',
-            loader: 'tslint-loader',
-            options: {
-                tsConfigFile: BUILD_TSCONFIG,
-                // Autofix errors
-                fix: false
-            }
-        })
+const ENV_MODES = {
+    DEV: 'development',
+    PROD: 'production'
+};
+
+module.exports = ({NODE_ENV = ENV_MODES.PROD}) => {
+    // ------ ENTRY ------
+    const ENTRY = {};
+    ENTRY[PACKAGE.name] = (NODE_ENV === ENV_MODES.DEV) ? DEMO_FILE : SRC_FILE;
+
+
+    // ------ EXTERNALS ------
+    const EXTERNALS = {};
+    if (NODE_ENV === ENV_MODES.PROD) {
+        EXTERNALS.react = {root: 'React', commonjs2: 'react', commonjs: 'react', amd: 'react'};
+        EXTERNALS['react-dom'] = {root: 'ReactDOM', commonjs2: 'react-dom', commonjs: 'react-dom', amd: 'react-dom'};
     }
 
+    // ------ RULES LIST ------
+    const RULES = [
+        // Babel loader for js files
+        {
+            test: /\.jsx?$/,
+            loader: 'babel-loader',
+            exclude: /node_modules/,
+            options: {
+                // BABEL_ENV set to es5
+                forceEnv: 'es5',
+                compact: false,
+                cacheDirectory: true
+            }
+        },
+        // Binary loader for data
+        {
+            test: /\.dat$/,
+            loaders: [
+                'binary-loader',
+            ],
+            exclude: /node_modules/
+        }];
+
+    // only add eslint for dev mode
+    if (NODE_ENV === ENV_MODES.DEV) {
+        RULES.push({
+            test: /\.js$/,
+            enforce: 'pre',
+            include: [SRC],
+            loader: 'eslint-loader',
+            options: {
+                failOnWarning: false,
+                failOnError: false
+            }
+        });
+    }
+
+    // ------ PLUGINS LIST ------
+    const PLUGINS = [
+        new WEBPACK.NoEmitOnErrorsPlugin(),
+        new WEBPACK.DefinePlugin({
+            'process.env': {
+                NODE_ENV: JSON.stringify(NODE_ENV)
+            }
+        })
+    ];
+
     return {
-        devtool: (dev) ? 'inline-source-map' : 'source-map',
-        entry: (dev) ? DEMO_FILE : SRC_FILE,
+        devtool: (NODE_ENV === ENV_MODES.DEV) ? 'inline-source-map' : 'source-map',
+        entry: ENTRY,
         output: {
             filename: `${PACKAGE.name}.js`,
             path: DIST,
             library: 'ReactArMarkers',
             libraryTarget: 'umd'
         },
+        externals: EXTERNALS,
         resolve: {
-            // Add `.ts` and `.tsx` as a resolvable extension.
-            extensions: ['.ts', '.tsx', '.js']
+            extensions: ['.js', '.json', '.jsx']
         },
         module: {
             rules: RULES
         },
+        plugins: PLUGINS,
         devServer: {
             open: true,
             contentBase: ROOT,
@@ -63,7 +99,7 @@ module.exports = ({ dev }) => {
             port: 9000,
             overlay: {
                 errors: true
-              }
+            }
         }
     };
-}
+};
