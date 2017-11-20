@@ -1,0 +1,12 @@
+{
+  "id": "wine",
+  "lat": 48.13034209,
+  "lng": -1.7888197,
+  "data": {
+    "title": "WaterBottle",
+    "pattern": {
+      "preset": "hijo"
+    },
+    "3d-model": "/data/models/WaterBottle/WaterBottle.gltf"
+  }
+}

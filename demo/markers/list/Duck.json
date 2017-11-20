@@ -1,0 +1,12 @@
+{
+  "id": "duck",
+  "lat": 48.13034209,
+  "lng": -1.7888197,
+  "data": {
+    "title": "Duck",
+    "pattern": {
+      "preset": "hijo"
+    },
+    "3d-model": "/data/models/Duck/Duck.gltf"
+  }
+}

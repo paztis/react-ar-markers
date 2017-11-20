@@ -1,0 +1,12 @@
+{
+  "id": "brainstream",
+  "lat": 48.10901111,
+  "lng": -1.6075148,
+  "data": {
+    "title": "BrainStem",
+    "pattern": {
+      "preset": "hijo"
+    },
+    "3d-model": "/data/models/Brainstream/BrainStem.gltf"
+  }
+}

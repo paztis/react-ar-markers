@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {MyComponent} from './index';
+import Demo from './demo';
 
 ReactDOM.render(
     <div>
-        <MyComponent />
+        <Demo />
     </div>,
     document.getElementById('root')
 );

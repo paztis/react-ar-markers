@@ -5,7 +5,8 @@ const PACKAGE = require('../package.json');
 const ROOT = PATH.resolve(__dirname, '..');
 const SRC = PATH.resolve(ROOT, 'src');
 const SRC_FILE = PATH.resolve(SRC, 'index.js');
-const DEMO_FILE = PATH.resolve(SRC, 'demo.js');
+const DEMO = PATH.resolve(ROOT, 'demo');
+const DEMO_FILE = PATH.resolve(DEMO, 'index.js');
 const DIST = PATH.resolve(ROOT, 'dist');
 const BUILD = PATH.resolve(ROOT, 'build');
 
@@ -48,6 +49,28 @@ module.exports = ({NODE_ENV = ENV_MODES.PROD}) => {
                 'binary-loader',
             ],
             exclude: /node_modules/
+        },
+        {
+            test: /aframe-ar.js$/,
+            enforce: 'pre',
+            loaders: [
+                'asm-async-loader',
+            ]
+        },
+        // Css loader for non module css files
+        {
+            test: /^(?!.*?\.module).*\.scss$/,
+            use: ['style-loader', 'css-loader', 'sass-loader']
+        },
+        // Css loader for module css files
+        {
+            test: /\.module\.scss$/,
+            use: ['style-loader', {
+                loader: 'css-loader',
+                options: {
+                    modules: true
+                }
+            }, 'sass-loader']
         }];
 
     // only add eslint for dev mode
