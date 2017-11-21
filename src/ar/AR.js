@@ -25,13 +25,44 @@ class AR extends React.Component {
         });
     }
 
+    componentDidUpdate() {
+        // Dispose AR on empty list
+        const {markers = []} = this.props;
+        if (markers.length === 0) {
+            this.disposeAR();
+        }
+    }
+
+    componentWillUnmount() {
+        this.disposeAR();
+    }
+
+    disposeAR() {
+        if (this.sceneE && this.sceneE.arjs && this.sceneE.arjs._arSession) {
+            const session = this.sceneE.arjs._arSession;
+            try {
+                session.arContext.arController.dispose();
+            } catch (e) {
+                console.warn('fail to dispose arController', e);
+            }
+            
+            try {
+                const videoE = session.arSource.domElement;
+                videoE.srcObject.getTracks()[0].stop();
+                videoE.remove();
+            } catch (e) {
+                console.warn('fail to dispose video stream', e);
+            }
+        }
+    }
+
     render() {
         const {markers = []} = this.props;
         const {aframeArLoaded} = this.state;
         return (
             <div className={arCSS.ar}>
                 {aframeArLoaded && markers.length > 0 &&
-                <Scene embedded arjs={`sourceType: ${CONFIG.sourceType}; sourceUrl: ${CONFIG.sourceUrl};`}>
+                <Scene _ref={(sceneE) => { this.sceneE = sceneE; }} embedded arjs={`sourceType: ${CONFIG.sourceType}; sourceUrl: ${CONFIG.sourceUrl};`}>
                     <a-assets>
                         {markers.map(marker => <a-asset-item key={marker.id} id={marker.id} src={marker.data['3d-model']} />)}
                     </a-assets>
