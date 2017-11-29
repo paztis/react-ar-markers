@@ -98,7 +98,7 @@ module.exports = ({NODE_ENV = ENV_MODES.PROD}) => {
     ];
 
     return {
-        devtool: (NODE_ENV === ENV_MODES.DEV) ? 'inline-source-map' : 'source-map',
+        devtool: (NODE_ENV === ENV_MODES.DEV) ? 'cheap-module-eval-source-map' : 'source-map',
         entry: ENTRY,
         output: {
             filename: `${PACKAGE.name}.js`,
