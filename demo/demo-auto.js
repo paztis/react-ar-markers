@@ -1,4 +1,5 @@
 import React from 'react';
+import classnames from 'classnames';
 import MARKER_LIST from './markers/list';
 import {AR, MapNav} from '../src';
 import demoCSS from './scss/demo.module.scss';
@@ -8,7 +9,7 @@ class Demo extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            activeMarkers: []
+            closeMarkers: []
         };
 
         this.getMapNavProps = this.getMapNavProps.bind(this);
@@ -18,7 +19,7 @@ class Demo extends React.Component {
     setCloseMarkers(markers) {
         console.warn('>>>> RESULTS =', markers);
         this.state = {
-            activeMarkers: markers.slice()
+            closeMarkers: markers.slice()
         };
     }
 
@@ -32,15 +33,24 @@ class Demo extends React.Component {
     }
 
     render() {
-        const {activeMarkers} = this.state;
+        const {closeMarkers} = this.state;
 
+        const classnameAR = classnames({
+            // Hide AR when no close markers
+            [demoCSS.hidden]: (closeMarkers.length === 0)
+        });
+
+        const classnameMapNav = classnames({
+            // Hide MapNav when close markers
+            [demoCSS.hidden]: (closeMarkers.length > 0)
+        });
 
 
         return (
             <div className={demoCSS.demoContainer}>
                 {/* Render the components */}
-                <AR markers={activeMarkers} />
-                <MapNav {...this.getMapNavProps()} />
+                <AR className={classnameAR} markers={closeMarkers} />
+                <MapNav className={classnameMapNav} {...this.getMapNavProps()} />
             </div>
         );
     }
