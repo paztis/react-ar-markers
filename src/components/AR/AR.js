@@ -1,6 +1,6 @@
 import 'aframe';
 import arLoadingPromise from 'ar.js/aframe/build/aframe-ar';
-import {Entity, Scene} from 'aframe-react';
+import {Entity} from 'aframe-react';
 import React from 'react';
 import ARMarker from './ARMarker';
 import arCSS from './scss/ar.module.scss';
@@ -14,6 +14,8 @@ class AR extends React.Component {
             aframeArLoaded: false,
         };
 
+        this.getARjsProps = this.getARjsProps.bind(this);
+
         arLoadingPromise.then(() => {
             setTimeout(() => {
                 window.ARjs.Context.baseURL = CONFIG.baseURL;
@@ -25,9 +27,9 @@ class AR extends React.Component {
         });
     }
 
-    componentDidUpdate() {
+    componentWillUpdate(nextProps) {
         // Dispose AR on empty list
-        const {markers = []} = this.props;
+        const {markers = []} = nextProps;
         if (markers.length === 0) {
             this.disposeAR();
         }
@@ -37,19 +39,39 @@ class AR extends React.Component {
         this.disposeAR();
     }
 
+    getARjsProps() {
+        let props = '';
+        const {arjsSystem} = CONFIG;
+        Object.keys(arjsSystem).forEach((key) => {
+            props += `${key}: ${arjsSystem[key]}; `;
+        });
+        return props;
+    }
+
     disposeAR() {
-        if (this.sceneE && this.sceneE.arjs && this.sceneE.arjs._arSession) {
-            const session = this.sceneE.arjs._arSession;
+        if (this.sceneE && this.sceneE.systems && this.sceneE.systems.arjs &&
+            this.sceneE.systems.arjs._arSession) {
+            const session = this.sceneE.systems.arjs._arSession;
             try {
                 session.arContext.arController.dispose();
             } catch (e) {
                 console.warn('fail to dispose arController', e);
             }
-            
+
             try {
-                const videoE = session.arSource.domElement;
-                videoE.srcObject.getTracks()[0].stop();
-                videoE.remove();
+                const sourceE = session.arSource.domElement;
+                switch (sourceE.nodeName) {
+                    case 'VIDEO':
+                        sourceE.srcObject.getTracks()[0].stop();
+                        // sourceE.remove();
+                        break;
+                    case 'IMG':
+                        sourceE.removeAttribute('src');
+                        // sourceE.remove();
+                        break;
+                    default:
+                        sourceE.remove();
+                }
             } catch (e) {
                 console.warn('fail to dispose video stream', e);
             }
@@ -62,7 +84,7 @@ class AR extends React.Component {
         return (
             <div className={arCSS.ar}>
                 {aframeArLoaded && markers.length > 0 &&
-                <Scene _ref={(sceneE) => { this.sceneE = sceneE; }} embedded arjs={`sourceType: ${CONFIG.sourceType}; sourceUrl: ${CONFIG.sourceUrl};`}>
+                <a-scene ref={(sceneE) => { this.sceneE = sceneE; }} embedded arjs={this.getARjsProps()}>
                     <a-assets>
                         {markers.map(marker => <a-asset-item key={marker.id} id={marker.id} src={marker.data['3d-model']} />)}
                     </a-assets>
@@ -71,7 +93,7 @@ class AR extends React.Component {
 
                     {/* Define a static camera */}
                     <Entity primitive="a-camera-static" />
-                </Scene>
+                </a-scene>
                 }
             </div>
         );

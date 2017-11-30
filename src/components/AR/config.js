@@ -1,20 +1,19 @@
 export default {
     baseURL: '/node_modules/ar.js/three.js/',
 
-    // ---- Webcam mode ----
-    // source: {
-    //     sourceType: 'webcam',
-    // },
+    arjsSystem: {
+        debugUIEnabled: false,
+        // areaLearningButton: false,
 
-    // ---- video mode ----
-    // source: {
-    //     sourceType: 'video',
-    //     sourceUrl: '',
-    // },
+        // ---- Webcam mode ----
+        //     sourceType: 'webcam',
 
-    // ---- image mode ----
-    source: {
+        // ---- video mode ----
+        //     sourceType: 'video',
+        //     sourceUrl: '',
+
+        // ---- image mode ----
         sourceType: 'image',
-        sourceUrl: '/data/sources/img.jpg',
-    },
+        sourceUrl: '/data/source/img.jpg'
+    }
 };
