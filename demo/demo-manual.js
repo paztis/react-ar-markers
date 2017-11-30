@@ -1,7 +1,7 @@
 import React from 'react';
 import classnames from 'classnames';
 import MARKER_LIST from './markers/list';
-import {AR, MapNav} from '../src';
+import {AR} from '../src';
 import demoCSS from './scss/demo.module.scss';
 
 
@@ -63,10 +63,15 @@ class Demo extends React.Component {
     render() {
         const {activeMarkers} = this.state;
 
+        const classnameAR = classnames({
+            // Hide AR when no close markers
+            [demoCSS.hidden]: (activeMarkers.length === 0)
+        });
+
         return (
             <div className={demoCSS.demoContainer}>
                 {/* Render the components */}
-                <AR markers={activeMarkers} />
+                <AR className={classnameAR} markers={activeMarkers} />
 
                 {/* Demo overlay */}
                 <div className={demoCSS.helpers}>
